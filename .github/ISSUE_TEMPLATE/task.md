@@ -20,13 +20,19 @@ Explain the intended outcome of this task.
 ## ⏳ Expected Completion Time
 (Example: 2 days, 1 week, etc.)
 
-## 💪 Difficulty Level
-Select **one** difficulty label for this task:
-- beginner
-- intermediate
-- hard
+---
+
+## 💪 Difficulty Level (Assigned by Mentor)
+> **Contributors:** Do not select difficulty.  
+> This will be assigned by the mentor after reviewing your task.  
+> Possible values:  
+> - beginner  
+> - intermediate  
+> - hard  
+
+---
 
 > **Important:**  
 > - This task **must** have the `OSCI` label.  
-> - Add **exactly one** difficulty label (`beginner`, `intermediate`, or `hard`).  
+> - Mentor will add **exactly one** difficulty label (`beginner`, `intermediate`, or `hard`).  
 > - Points will be awarded automatically based on difficulty once the issue is closed.
