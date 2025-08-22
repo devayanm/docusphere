@@ -5,6 +5,8 @@ Welcome to **DocuSphere**, an open-source, extensible, and developer-friendly do
 Think **GitBook meets Notion**, but fully self-hostable, customizable, and built for teams that want full control over their docs and workflows.
 
 > ⭐ Star this repository to help the project grow and attract contributors!
+> 
+[![OSCI-Project-Banner.png](https://i.postimg.cc/76mJvBmF/OSCI-Project-Banner.png)](https://postimg.cc/8JfzMb84)
 
 ---
 
