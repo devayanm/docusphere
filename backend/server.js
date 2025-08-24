@@ -5,11 +5,18 @@ import authRoutes from './routes/authRoutes.js';
 import documentRoutes from './routes/documentRoutes.js'; // Add this line
 import mongoose from "mongoose";
 
-dotenv.config();
+// Try to load .env first, then fallback to .env.example
+dotenv.config({ path: '.env' });
+if (!process.env.MONGODB_URI) {
+    dotenv.config({ path: '.env.example' });
+}
 
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGODB_URI, {
+// Use a default MongoDB URI if not found in environment files
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/docusphere";
+
+mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
