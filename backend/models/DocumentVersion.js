@@ -1,36 +1,32 @@
-// DocumentVersion model for Sequelize with ES6 modules
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import mongoose from 'mongoose';
 
-const DocumentVersion = sequelize.define('DocumentVersion', {
-  id: { 
-    type: DataTypes.UUID, 
-    defaultValue: DataTypes.UUIDV4, 
-    primaryKey: true 
-  },
+const documentVersionSchema = new mongoose.Schema({
   documentId: { 
-    type: DataTypes.UUID, 
-    allowNull: false 
+    type: mongoose.Schema.Types.ObjectId, 
+    required: true,
+    ref: 'Document'
   },
   content: { 
-    type: DataTypes.TEXT, 
-    allowNull: false 
+    type: String, 
+    required: true 
   },
   version: { 
-    type: DataTypes.INTEGER, 
-    allowNull: false 
+    type: Number, 
+    required: true,
+    default: 1
   },
   createdBy: { 
-    type: DataTypes.STRING, 
-    allowNull: false 
-  },
-  createdAt: { 
-    type: DataTypes.DATE, 
-    defaultValue: DataTypes.NOW 
+    type: String, 
+    required: true 
   }
-}, { 
-  tableName: 'document_versions', 
-  timestamps: false 
+}, {
+  timestamps: true
 });
+
+// Create indexes for better performance
+documentVersionSchema.index({ documentId: 1, version: 1 });
+documentVersionSchema.index({ createdBy: 1 });
+
+const DocumentVersion = mongoose.model('DocumentVersion', documentVersionSchema);
 
 export default DocumentVersion;

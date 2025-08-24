@@ -3,28 +3,29 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
-import sequelize from './config/database.js'; // You'll need to create this
+import mongoose from "mongoose";
 
 // Try to load .env first, then fallback to .env.example
 dotenv.config({ path: '.env' });
-if (!process.env.DATABASE_URL) {
+if (!process.env.MONGODB_URI) {
     dotenv.config({ path: '.env.example' });
 }
 
 const PORT = process.env.PORT || 3000;
 
-// Test database connection and sync models
-sequelize.authenticate()
-    .then(() => {
-        console.log('Database connected successfully.');
-        return sequelize.sync(); // This creates tables if they don't exist
-    })
-    .then(() => {
-        console.log('Database synced successfully.');
-    })
-    .catch((error) => {
-        console.error('Unable to connect to the database:', error);
-    });
+// Use a default MongoDB URI if not found in environment files
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/docusphere";
+
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => {
+    console.log("MongoDB connected");
+})
+.catch((error) => {
+    console.error("MongoDB connection error:", error);
+});
 
 const app = express();
 
