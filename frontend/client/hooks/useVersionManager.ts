@@ -17,7 +17,7 @@ interface UseVersionManagerProps {
   autoSaveInterval?: number; // in milliseconds
 }
 
-export const useVersionManager = ({
+const useVersionManager = ({
   documentId,
   currentContent,
   currentUser,
@@ -31,9 +31,9 @@ export const useVersionManager = ({
   const createVersion = useCallback(async (content: string, changesSummary?: string) => {
     try {
       const wordCount = content.replace(/<[^>]*>/g, '').trim().split(/\s+/).length;
-      
+
       const newVersion: Version = {
-        id: Date.now().toString(), // Use proper UUID in production
+        id: Date.now().toString(), // In production, use UUID
         version: versions.length + 1,
         content,
         createdBy: currentUser,
@@ -42,13 +42,6 @@ export const useVersionManager = ({
         wordCount
       };
 
-      // In production, make API call:
-      // const response = await fetch(`/api/documents/${documentId}/versions`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(newVersion)
-      // });
-
       setVersions(prev => [newVersion, ...prev]);
       setLastSaved(new Date());
       return newVersion;
@@ -56,7 +49,7 @@ export const useVersionManager = ({
       console.error('Error creating version:', error);
       throw error;
     }
-  }, [documentId, currentUser, versions.length]);
+  }, [currentUser, versions.length]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -90,14 +83,8 @@ export const useVersionManager = ({
   // Restore version
   const restoreVersion = useCallback(async (versionId: string) => {
     try {
-      // In production, make API call:
-      // const response = await fetch(`/api/documents/${documentId}/restore/${versionId}`, {
-      //   method: 'POST'
-      // });
-
       const version = versions.find(v => v.id === versionId);
       if (version) {
-        // Create a new version based on the restored content
         await createVersion(version.content, `Restored from Version ${version.version}`);
         return version;
       }
@@ -106,24 +93,17 @@ export const useVersionManager = ({
       console.error('Error restoring version:', error);
       throw error;
     }
-  }, [documentId, versions, createVersion]);
+  }, [versions, createVersion]);
 
-  // Load versions from API
+  // Load versions (dummy for now)
   const loadVersions = useCallback(async () => {
     try {
-      // In production, make API call:
-      // const response = await fetch(`/api/documents/${documentId}/versions`);
-      // const data = await response.json();
-      // setVersions(data);
-
-      // Mock data for demonstration
-      setVersions([]);
+      setVersions([]); // Replace with API call later
     } catch (error) {
       console.error('Error loading versions:', error);
     }
-  }, [documentId]);
+  }, []);
 
-  // Load versions on mount
   useEffect(() => {
     loadVersions();
   }, [loadVersions]);
@@ -138,3 +118,5 @@ export const useVersionManager = ({
     loadVersions
   };
 };
+
+export default useVersionManager;

@@ -4,7 +4,6 @@ import { cn } from '../lib/utils';
 import {
   BookOpenIcon,
   Bars3Icon,
-  XMarkIcon,
   SunIcon,
   MoonIcon,
   MagnifyingGlassIcon
@@ -65,7 +64,7 @@ export function Layout({ children }: LayoutProps) {
               <span className="text-lg sm:text-xl font-bold text-foreground hidden xs:block">DocuSphere</span>
             </Link>
 
-            {/* Search trigger - responsive */}
+            {/* Search trigger */}
             <div className="flex-1 max-w-xs sm:max-w-md ml-auto lg:ml-0">
               <button
                 onClick={openSearch}
@@ -79,7 +78,7 @@ export function Layout({ children }: LayoutProps) {
               </button>
             </div>
 
-            {/* Theme toggle - enhanced */}
+            {/* Theme toggle */}
             <Button
               variant="ghost"
               size="sm"
@@ -96,9 +95,10 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        {/* Page content - responsive padding */}
+        {/* Page content */}
         <main className="p-3 sm:p-4 md:p-6 lg:p-8 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)]">
-          <div className="max-w-full overflow-x-auto">
+          {/* ✅ FIX: removed overflow-x-auto so toolbar buttons (History, Comments, etc.) don’t disappear */}
+          <div className="max-w-full">
             {children}
           </div>
         </main>

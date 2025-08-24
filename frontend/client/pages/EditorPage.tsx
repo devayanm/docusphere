@@ -5,7 +5,7 @@ import DocumentHistory from '../components/DocumentHistory';
 import { ImportExportModal } from '../components/ImportExportModal';
 import { CollaborationIndicators } from '../components/CollaborationIndicators';
 import { UserRoleManager } from '../components/UserRoleManager';
-import { useVersionManager } from '../../src/hooks/useVersionManager';
+import useVersionManager from "../hooks/useVersionManager";
 import { Button } from '../components/ui/button';
 import {
   DocumentArrowUpIcon,
@@ -39,11 +39,10 @@ export default function EditorPage() {
   } = useVersionManager({
     documentId: 'doc-1',
     currentContent: content,
-    currentUser: 'John Doe', // Get from your auth system
+    currentUser: 'John Doe',
     autoSaveInterval: 30000 // 30 seconds
   });
 
-  // Track unsaved changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setHasUnsavedChanges(true);
@@ -52,7 +51,6 @@ export default function EditorPage() {
     return () => clearTimeout(timeoutId);
   }, [content, title]);
 
-  // Reset unsaved changes flag when auto-saved
   useEffect(() => {
     if (!isAutoSaving) {
       setHasUnsavedChanges(false);
@@ -111,10 +109,12 @@ export default function EditorPage() {
 
   return (
     <div className="relative">
-      <div className={`transition-all duration-300 ${
-        (showComments && showVersionHistory) || (showComments && showUserManager) || (showVersionHistory && showUserManager) ? 'mr-[672px]' :
-        showComments || showVersionHistory || showUserManager ? 'mr-80' : ''
-      }`}>
+      {/* Main Content Wrapper (shifts when side panels open) */}
+      <div 
+        className={`transition-all duration-300 ${
+          showComments || showVersionHistory || showUserManager ? 'mr-80' : ''
+        }`}
+      >
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-6">
@@ -168,7 +168,6 @@ export default function EditorPage() {
                 <span>Last edited: {lastSaved.toLocaleDateString()}</span>
               </div>
               
-              {/* Save Status */}
               <div className={`flex items-center gap-2 ${getStatusColor()}`}>
                 {getStatusIcon()}
                 <span>{getStatusText()}</span>
@@ -217,7 +216,7 @@ export default function EditorPage() {
           documentId="doc-1" 
           isOpen={showVersionHistory}
           onClose={() => setShowVersionHistory(false)}
-          onRestore={handleVersionRestore} 
+          onRestore={handleVersionRestore}
         />
       )}
 
