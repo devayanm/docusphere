@@ -23,9 +23,9 @@ interface DocumentHistoryProps {
   onRestore: (version: Version) => void;
   isOpen: boolean;
   onClose: () => void;
-  versions?: Version[];         // ✅ optional, allows external versions
-  isAutoSaving?: boolean;       // ✅ optional
-  lastSaved?: Date;             // ✅ optional
+  versions?: Version[];
+  isAutoSaving?: boolean;
+  lastSaved?: Date;
 }
 
 const DocumentHistory: React.FC<DocumentHistoryProps> = ({ 
@@ -72,7 +72,6 @@ const DocumentHistory: React.FC<DocumentHistoryProps> = ({
   const fetchVersions = async () => {
     setLoading(true);
     setTimeout(() => {
-      // If EditorPage provides versions, use them. Otherwise, fall back to mock
       setVersions(externalVersions && externalVersions.length > 0 ? externalVersions : mockVersions);
       setLoading(false);
     }, 500);
@@ -95,28 +94,33 @@ const DocumentHistory: React.FC<DocumentHistoryProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 h-full w-80 bg-white border-l shadow-lg z-50 overflow-hidden flex flex-col">
+    <div
+      className="fixed right-0 top-0 h-full w-80 
+                 bg-white dark:bg-gray-900    // ✅ supports dark mode
+                 text-gray-900 dark:text-gray-100
+                 border-l border-border shadow-lg z-50 overflow-hidden flex flex-col"
+    >
       {/* Header */}
-      <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+      <div className="p-4 border-b flex justify-between items-center bg-gray-50 dark:bg-gray-800">
         <div className="flex items-center gap-2">
           {viewMode !== 'list' && (
             <button onClick={() => { setViewMode('list'); setPreviewVersion(null); }}>
               <ChevronLeftIcon className="h-4 w-4" />
             </button>
           )}
-          <ClockIcon className="h-5 w-5 text-gray-600" />
+          <ClockIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           <h2 className="text-lg font-semibold">
             {viewMode === 'preview' ? `Version ${previewVersion?.version}` : 'Version History'}
           </h2>
         </div>
         <button onClick={onClose}>
-          <XMarkIcon className="h-5 w-5 text-gray-600" />
+          <XMarkIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
         </button>
       </div>
 
       {/* Status Info */}
       {(isAutoSaving || lastSaved) && (
-        <div className="p-2 text-xs text-gray-600 border-b bg-gray-100">
+        <div className="p-2 text-xs text-gray-600 dark:text-gray-400 border-b bg-gray-100 dark:bg-gray-800">
           {isAutoSaving ? "Auto-saving..." : `Last saved: ${lastSaved?.toLocaleString()}`}
         </div>
       )}
@@ -124,10 +128,10 @@ const DocumentHistory: React.FC<DocumentHistoryProps> = ({
       {/* Version list */}
       <div className="flex-1 overflow-y-auto p-4">
         {loading ? (
-          <div className="text-center text-gray-500">Loading...</div>
+          <div className="text-center text-gray-500 dark:text-gray-400">Loading...</div>
         ) : (
           versions.map((version, index) => (
-            <div key={version.id} className="border rounded-lg p-3 mb-3">
+            <div key={version.id} className="border rounded-lg p-3 mb-3 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <strong>Version {version.version}</strong>
