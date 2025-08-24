@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { RichTextEditor } from '../components/RichTextEditor';
 import { CommentsPanel } from '../components/CommentsPanel';
-import { VersionHistory } from '../components/VersionHistory';
+import DocumentHistory from '../components/DocumentHistory';
 import { ImportExportModal } from '../components/ImportExportModal';
 import { CollaborationIndicators } from '../components/CollaborationIndicators';
 import { UserRoleManager } from '../components/UserRoleManager';
+import { useVersionManager } from '../../src/hooks/useVersionManager';
 import { Button } from '../components/ui/button';
 import {
   DocumentArrowUpIcon,
@@ -13,60 +14,99 @@ import {
   ShareIcon,
   ChatBubbleLeftRightIcon,
   ClockIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
 
 export default function EditorPage() {
-  const [content, setContent] = useState(`
-    <h1>Welcome to DocuSphere</h1>
-    <p>Start creating your documentation here. This rich text editor supports:</p>
-    <ul>
-      <li><strong>Bold</strong> and <em>italic</em> text formatting</li>
-      <li>Headers and lists</li>
-      <li>Code blocks with syntax highlighting</li>
-      <li>Blockquotes and more</li>
-    </ul>
-    <blockquote>
-      <p>This is a sample blockquote to showcase the editor capabilities.</p>
-    </blockquote>
-    <pre><code class="language-javascript">// Sample code block
-function hello() {
-  console.log("Hello, DocuSphere!");
-}</code></pre>
-  `);
-
-  const [title, setTitle] = useState('Untitled Document');
+  const [content, setContent] = useState(`<h1>Welcome to DocuSphere</h1><p>This is a simplified editor for testing.</p>`);
+  const [title, setTitle] = useState('Simple Editor Test');
   const [showComments, setShowComments] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date>(new Date());
-  const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showUserManager, setShowUserManager] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Auto-save simulation
+  // Version management
+  const {
+    versions,
+    isAutoSaving,
+    lastSaved,
+    saveVersion,
+    restoreVersion
+  } = useVersionManager({
+    documentId: 'doc-1',
+    currentContent: content,
+    currentUser: 'John Doe', // Get from your auth system
+    autoSaveInterval: 30000 // 30 seconds
+  });
+
+  // Track unsaved changes
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAutoSaving(true);
-      setTimeout(() => {
-        setLastSaved(new Date());
-        setIsAutoSaving(false);
-      }, 1000);
-    }, 30000); // Auto-save every 30 seconds
+    const timeoutId = setTimeout(() => {
+      setHasUnsavedChanges(true);
+    }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearTimeout(timeoutId);
+  }, [content, title]);
 
-  const handleVersionRestore = (version: any) => {
-    setContent(version.content);
-    setTitle(version.title);
-    setLastSaved(new Date());
+  // Reset unsaved changes flag when auto-saved
+  useEffect(() => {
+    if (!isAutoSaving) {
+      setHasUnsavedChanges(false);
+    }
+  }, [isAutoSaving]);
+
+  const handleVersionRestore = async (version: any) => {
+    try {
+      await restoreVersion(version.id);
+      setContent(version.content);
+      setTitle(`Restored: Version ${version.version}`);
+      setShowVersionHistory(false);
+      setHasUnsavedChanges(false);
+    } catch (error) {
+      console.error('Error restoring version:', error);
+    }
+  };
+
+  const handleManualSave = async () => {
+    try {
+      const summary = prompt('Enter a summary for this version (optional):');
+      await saveVersion(summary || 'Manual save');
+      setHasUnsavedChanges(false);
+    } catch (error) {
+      console.error('Error saving version:', error);
+    }
   };
 
   const handleImport = (importedContent: string, importedTitle: string) => {
     setContent(importedContent);
     setTitle(importedTitle);
-    setLastSaved(new Date());
+    setHasUnsavedChanges(true);
+  };
+
+  const getStatusIcon = () => {
+    if (isAutoSaving) {
+      return <div className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent" />;
+    }
+    if (hasUnsavedChanges) {
+      return <ExclamationCircleIcon className="h-4 w-4 text-yellow-500" />;
+    }
+    return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
+  };
+
+  const getStatusText = () => {
+    if (isAutoSaving) return 'Auto-saving...';
+    if (hasUnsavedChanges) return 'Unsaved changes';
+    return 'All changes saved';
+  };
+
+  const getStatusColor = () => {
+    if (isAutoSaving) return 'text-yellow-600 dark:text-yellow-400';
+    if (hasUnsavedChanges) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-green-600 dark:text-green-400';
   };
 
   return (
@@ -86,136 +126,123 @@ function hello() {
                 className="text-3xl font-bold bg-transparent border-none focus:outline-none focus:ring-0 text-foreground placeholder-muted-foreground"
                 placeholder="Document title..."
               />
-
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowImportModal(true)}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleManualSave}
+                  disabled={isAutoSaving}
                 >
-                  <DocumentArrowUpIcon className="h-4 w-4 mr-2" />
-                  Import
+                  {isAutoSaving ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
+                  ) : (
+                    <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
+                  )}
+                  Save
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowExportModal(true)}
-                >
-                  <DocumentArrowDownIcon className="h-4 w-4 mr-2" />
-                  Export
+                <Button variant="outline" size="sm" onClick={() => setShowImportModal(true)}>
+                  <DocumentArrowUpIcon className="h-4 w-4 mr-2" />Import
                 </Button>
-                <Button variant="outline" size="sm">
-                  <EyeIcon className="h-4 w-4 mr-2" />
-                  Preview
+                <Button variant="outline" size="sm" onClick={() => setShowExportModal(true)}>
+                  <DocumentArrowDownIcon className="h-4 w-4 mr-2" />Export
                 </Button>
-                <Button
-                  variant={showComments ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowComments(!showComments)}
-                >
-                  <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
-                  Comments
+                <Button variant="outline" size="sm"><EyeIcon className="h-4 w-4 mr-2" />Preview</Button>
+                <Button variant={showComments ? "default" : "outline"} size="sm" onClick={() => setShowComments(!showComments)}>
+                  <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />Comments
                 </Button>
-                <Button
-                  variant={showVersionHistory ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowVersionHistory(!showVersionHistory)}
-                >
-                  <ClockIcon className="h-4 w-4 mr-2" />
-                  History
+                <Button variant={showVersionHistory ? "default" : "outline"} size="sm" onClick={() => setShowVersionHistory(!showVersionHistory)}>
+                  <ClockIcon className="h-4 w-4 mr-2" />History ({versions.length})
                 </Button>
-                <Button
-                  variant={showUserManager ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowUserManager(!showUserManager)}
-                >
-                  <UserGroupIcon className="h-4 w-4 mr-2" />
-                  Users
+                <Button variant={showUserManager ? "default" : "outline"} size="sm" onClick={() => setShowUserManager(!showUserManager)}>
+                  <UserGroupIcon className="h-4 w-4 mr-2" />Users
                 </Button>
-                <Button size="sm">
-                  <ShareIcon className="h-4 w-4 mr-2" />
-                  Publish
-                </Button>
+                <Button size="sm"><ShareIcon className="h-4 w-4 mr-2" />Publish</Button>
               </div>
             </div>
-
-            <div className="text-sm text-muted-foreground">
-              Last edited: {lastSaved.toLocaleDateString()} •
-              {isAutoSaving ? (
-                <span className="text-yellow-600 dark:text-yellow-400"> Auto-saving...</span>
-              ) : (
-                <span className="text-green-600 dark:text-green-400"> Auto-saved</span>
-              )}
+            
+            {/* Enhanced Status Bar */}
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <span>Words: {content.replace(/<[^>]*>/g, '').trim().split(/\s+/).length}</span>
+                <span>Version {versions.length > 0 ? versions[0]?.version || 1 : 1}</span>
+                <span>Last edited: {lastSaved.toLocaleDateString()}</span>
+              </div>
+              
+              {/* Save Status */}
+              <div className={`flex items-center gap-2 ${getStatusColor()}`}>
+                {getStatusIcon()}
+                <span>{getStatusText()}</span>
+                {!isAutoSaving && hasUnsavedChanges && (
+                  <button 
+                    onClick={handleManualSave}
+                    className="ml-2 text-xs px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800 transition-colors"
+                  >
+                    Save now
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Editor */}
-          <RichTextEditor
-            content={content}
-            onChange={setContent}
-            placeholder="Start writing your documentation..."
-            className="min-h-[600px]"
-          />
+          <div className="border border-border rounded-lg">
+            <RichTextEditor 
+              content={content} 
+              onChange={setContent} 
+              placeholder="Start writing..." 
+              className="min-h-[600px]" 
+            />
+          </div>
 
-          {/* Status bar with collaboration */}
+          {/* Bottom Status */}
           <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center gap-4">
-              <span>Words: {content.replace(/<[^>]*>/g, '').trim().split(/\s+/).length}</span>
-              <span>Version 1.0</span>
+              <span>Characters: {content.length}</span>
+              <span>Reading time: ~{Math.ceil(content.replace(/<[^>]*>/g, '').split(' ').length / 200)} min</span>
             </div>
             <CollaborationIndicators />
           </div>
         </div>
       </div>
 
-      {/* Comments Panel */}
-      <CommentsPanel
-        pageId="editor-page"
-        isOpen={showComments}
-        onClose={() => setShowComments(false)}
+      {/* Panels */}
+      <CommentsPanel 
+        pageId="editor-page" 
+        isOpen={showComments} 
+        onClose={() => setShowComments(false)} 
       />
 
-      {/* Version History Panel */}
-      <div className={
-        (showComments && showVersionHistory) || (showComments && showUserManager) || (showVersionHistory && showUserManager)
-          ? 'mr-80'
-          : ''
-      }>
-        <VersionHistory
+      {showVersionHistory && (
+        <DocumentHistory 
+          documentId="doc-1" 
           isOpen={showVersionHistory}
           onClose={() => setShowVersionHistory(false)}
-          onRestore={handleVersionRestore}
-          currentContent={content}
+          onRestore={handleVersionRestore} 
         />
-      </div>
+      )}
 
-      {/* User Role Manager */}
-      <div className={
-        showComments && showUserManager ? 'mr-80' :
-        showVersionHistory && showUserManager ? 'mr-80' : ''
-      }>
-        <UserRoleManager
-          isOpen={showUserManager}
-          onClose={() => setShowUserManager(false)}
+      {showUserManager && (
+        <UserRoleManager 
+          isOpen={showUserManager} 
+          onClose={() => setShowUserManager(false)} 
         />
-      </div>
+      )}
 
-      {/* Import/Export Modals */}
-      <ImportExportModal
-        isOpen={showImportModal}
-        onClose={() => setShowImportModal(false)}
-        mode="import"
-        content={content}
-        title={title}
-        onImport={handleImport}
+      <ImportExportModal 
+        isOpen={showImportModal} 
+        onClose={() => setShowImportModal(false)} 
+        mode="import" 
+        content={content} 
+        title={title} 
+        onImport={handleImport} 
       />
-
-      <ImportExportModal
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-        mode="export"
-        content={content}
-        title={title}
+      
+      <ImportExportModal 
+        isOpen={showExportModal} 
+        onClose={() => setShowExportModal(false)} 
+        mode="export" 
+        content={content} 
+        title={title} 
       />
     </div>
   );
