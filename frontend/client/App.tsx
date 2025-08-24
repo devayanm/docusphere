@@ -10,8 +10,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { Layout } from "./components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import EditorPageSimple from "./pages/EditorPageSimple";
-import EditorPage from "./pages/EditorPage";   // ✅ Added full editor
+import EditorPage from "./pages/EditorPage";   // ✅ full editor
 import DocsPlaceholder from "./pages/DocsPlaceholder";
 
 const queryClient = new QueryClient();
@@ -26,19 +25,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
 
-            {/* Simple editor (current Get Started points here) */}
+            {/* ✅ Full-featured editor is now at /editor */}
             <Route
               path="/editor"
-              element={
-                <Layout>
-                  <EditorPageSimple />
-                </Layout>
-              }
-            />
-
-            {/* ✅ Added full-featured editor */}
-            <Route
-              path="/editor-full"
               element={
                 <Layout>
                   <EditorPage />
@@ -46,6 +35,7 @@ const App = () => (
               }
             />
 
+            {/* Docs placeholder */}
             <Route
               path="/docs/*"
               element={
