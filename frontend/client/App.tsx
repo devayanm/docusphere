@@ -10,7 +10,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { Layout } from "./components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import EditorPageSimple from "./pages/EditorPageSimple";
+import EditorPage from "./pages/EditorPage";   // ✅ full editor
 import DocsPlaceholder from "./pages/DocsPlaceholder";
 
 const queryClient = new QueryClient();
@@ -24,17 +24,28 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/editor" element={
-              <Layout>
-                <EditorPageSimple />
-              </Layout>
-            } />
-            <Route path="/docs/*" element={
-              <Layout>
-                <DocsPlaceholder />
-              </Layout>
-            } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+            {/* ✅ Full-featured editor is now at /editor */}
+            <Route
+              path="/editor"
+              element={
+                <Layout>
+                  <EditorPage />
+                </Layout>
+              }
+            />
+
+            {/* Docs placeholder */}
+            <Route
+              path="/docs/*"
+              element={
+                <Layout>
+                  <DocsPlaceholder />
+                </Layout>
+              }
+            />
+
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
