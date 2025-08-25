@@ -89,39 +89,39 @@ DocuSphere empowers teams to:
 > This repository is a starter. All code and folders will be created through contributions and PRs.
 
 ---
-
-## 🚀 Getting Started
-
-### 1️⃣ Clone the Repo
-```bash
-git clone https://github.com/YOUR_USERNAME/docusphere.git
+🚀 Getting Started
+1️⃣ Clone the Repo
+git clone https://github.com/devayanm/docusphere
 cd docusphere
-```
 
-### 2️⃣ Install Dependencies
-```bash
-npm install
-# or
-yarn install
-```
+2️⃣ Install Dependencies
 
-### 3️⃣ Set Up Environment
-```bash
-cp .env.example .env
-# Fill in the required values: MONGODB_URI, JWT_SECRET, etc.
-```
+Install backend and frontend dependencies separately:
 
-### 4️⃣ Start Development Servers
-```bash
 # Backend
 cd server
-npm run dev
+npm install
 
 # Frontend
 cd ../client
-npm run dev
-```
+npm install
 
+
+ℹ️ Note: There is no package.json at the root. Dependencies are managed individually inside server/ and client/.
+
+3️⃣ Set Up Environment
+# Copy example env file inside /server
+cd server
+cp .env.example .env
+# Fill in required values: MONGODB_URI, JWT_SECRET, etc.
+
+4️⃣ Start Development Servers
+# Start backend (from /server)
+npm run dev
+
+# In a separate terminal, start frontend (from /client)
+cd ../client
+npm run dev
 ---
 
 ## 🤝 Contribution Guide
