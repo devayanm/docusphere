@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 
 import authRoutes from './routes/authRoutes.js';
 import searchRouter from './routes/search.js';
+import documentRoutes from './routes/documentRoutes.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ async function start() {
 
   app.use('/api/auth', authRoutes);
   app.use('/api/search', searchRouter);
+  app.use('/api/documents', documentRoutes);
 
   app.get('/', (req, res) => {
     res.send('🚀 Server is running');
