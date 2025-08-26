@@ -4,7 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import authRoutes from './routes/authRoutes.js';
-import searchRouter from './routes/search.js';
+import searchRouter from './routes/searchRoute.js';
 
 dotenv.config();
 

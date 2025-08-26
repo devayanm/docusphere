@@ -1,12 +1,9 @@
-import express from 'express';
-import Document from '../models/Document.js';
 import { memoryQuery } from '../utils/memoryStore.js';
+import Document from '../models/Document.js';
 
-const router = express.Router();
 
-// GET /api/search?q=&types=markdown,pdf&tags=howto,guide&author=&from=2024-01-01&to=2025-12-31&sort=relevance|date|author&order=asc|desc&page=1&limit=20
-router.get('/', async (req, res, next) => {
-  try {
+export const searchDocuments = async (req, res, next) => {
+ try {
     const {
       q = '',
       types = '',
@@ -69,6 +66,4 @@ router.get('/', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
-
-export default router;
+};
