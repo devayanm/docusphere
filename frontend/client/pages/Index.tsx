@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { Button } from '../components/ui/button';
-import { 
+import { Link } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { ThemeToggle } from "../components/ThemeToggle"; // Import the new component
+import {
   BookOpenIcon,
   RocketLaunchIcon,
   UserGroupIcon,
@@ -10,58 +10,57 @@ import {
   ShareIcon,
   DocumentTextIcon,
   Cog6ToothIcon,
-  MoonIcon,
-  SunIcon,
   ArrowRightIcon,
   CheckIcon,
-  StarIcon
-} from '@heroicons/react/24/outline';
+  StarIcon,
+} from "@heroicons/react/24/outline";
 
 const features = [
   {
     icon: DocumentTextIcon,
-    title: 'Rich Text Editing',
-    description: 'Powerful Markdown and rich text editor with real-time collaboration'
+    title: "Rich Text Editing",
+    description:
+      "Powerful Markdown and rich text editor with real-time collaboration",
   },
   {
     icon: Cog6ToothIcon,
-    title: 'Drag & Drop Navigation',
-    description: 'Intuitive sidebar with drag-and-drop reordering for pages and folders'
+    title: "Drag & Drop Navigation",
+    description:
+      "Intuitive sidebar with drag-and-drop reordering for pages and folders",
   },
   {
     icon: UserGroupIcon,
-    title: 'Team Collaboration',
-    description: 'Role-based permissions and real-time collaborative editing'
+    title: "Team Collaboration",
+    description: "Role-based permissions and real-time collaborative editing",
   },
   {
     icon: CodeBracketIcon,
-    title: 'Developer Friendly',
-    description: 'REST & GraphQL APIs, GitHub sync, and direct React integration'
+    title: "Developer Friendly",
+    description:
+      "REST & GraphQL APIs, GitHub sync, and direct React integration",
   },
   {
     icon: LightBulbIcon,
-    title: 'Smart Search',
-    description: 'Fuzzy search across all documentation with instant results'
+    title: "Smart Search",
+    description: "Fuzzy search across all documentation with instant results",
   },
   {
     icon: ShareIcon,
-    title: 'Version Control',
-    description: 'Auto-save with version history and one-click rollbacks'
-  }
+    title: "Version Control",
+    description: "Auto-save with version history and one-click rollbacks",
+  },
 ];
 
 const benefits = [
-  'Self-hostable and fully customizable',
-  'Open source with plugin system',
-  'Fast, responsive, and mobile-friendly',
-  'Import/Export Markdown & JSON',
-  'Dark/Light theme support',
-  'Docs-as-code workflows'
+  "Self-hostable and fully customizable",
+  "Open source with plugin system",
+  "Fast, responsive, and mobile-friendly",
+  "Import/Export Markdown & JSON",
+  "Dark/Light theme support",
+  "Docs-as-code workflows",
 ];
 
 export default function Index() {
-  const { theme, toggleTheme } = useTheme();
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
@@ -70,22 +69,16 @@ export default function Index() {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center gap-2">
               <BookOpenIcon className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-foreground">DocuSphere</span>
+              <span className="text-2xl font-bold text-foreground">
+                DocuSphere
+              </span>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-              >
-                {theme === 'light' ? (
-                  <MoonIcon className="h-5 w-5" />
-                ) : (
-                  <SunIcon className="h-5 w-5" />
-                )}
-              </Button>
-              
+              {/* === THIS IS THE NEW THEME TOGGLE === */}
+              <ThemeToggle />
+              {/* ==================================== */}
+
               <Link to="/editor">
                 <Button>
                   Get Started
@@ -103,15 +96,19 @@ export default function Index() {
           <div className="max-w-4xl mx-auto">
             <h1 className="text-5xl lg:text-7xl font-bold text-foreground mb-6">
               The Modern
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"> GitBook </span>
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                {" "}
+                GitBook{" "}
+              </span>
               Alternative
             </h1>
-            
+
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              DocuSphere is an open-source, extensible, and developer-friendly documentation platform. 
-              Self-hostable, customizable, and built for teams that want full control.
+              DocuSphere is an open-source, extensible, and developer-friendly
+              documentation platform. Self-hostable, customizable, and built for
+              teams that want full control.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link to="/editor">
                 <Button size="lg" className="text-lg px-8 py-3">
@@ -119,7 +116,7 @@ export default function Index() {
                   Try the Editor
                 </Button>
               </Link>
-              
+
               <Button variant="outline" size="lg" className="text-lg px-8 py-3">
                 <StarIcon className="mr-2 h-5 w-5" />
                 Star on GitHub
@@ -152,20 +149,22 @@ export default function Index() {
               Powerful Features
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to create, manage, and share beautiful documentation
+              Everything you need to create, manage, and share beautiful
+              documentation
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="bg-background border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div
+                key={index}
+                className="bg-background border border-border rounded-xl p-6 hover:shadow-lg transition-shadow"
+              >
                 <feature.icon className="h-10 w-10 text-primary mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground">
-                  {feature.description}
-                </p>
+                <p className="text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -181,10 +180,10 @@ export default function Index() {
                 Built for Modern Teams
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                DocuSphere combines the best of GitBook and Notion, giving you complete control 
-                over your documentation workflow.
+                DocuSphere combines the best of GitBook and Notion, giving you
+                complete control over your documentation workflow.
               </p>
-              
+
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -194,7 +193,7 @@ export default function Index() {
                 ))}
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8 border border-primary/20">
               <div className="text-center">
                 <BookOpenIcon className="h-16 w-16 text-primary mx-auto mb-4" />
@@ -202,7 +201,8 @@ export default function Index() {
                   Ready to Get Started?
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Experience the power of DocuSphere with our interactive editor and sidebar navigation.
+                  Experience the power of DocuSphere with our interactive editor
+                  and sidebar navigation.
                 </p>
                 <Link to="/editor">
                   <Button size="lg" className="w-full">
@@ -222,9 +222,11 @@ export default function Index() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <BookOpenIcon className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold text-foreground">DocuSphere</span>
+              <span className="text-lg font-bold text-foreground">
+                DocuSphere
+              </span>
             </div>
-            
+
             <div className="text-sm text-muted-foreground">
               Built with ❤️ for modern documentation workflows
             </div>

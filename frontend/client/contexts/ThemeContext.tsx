@@ -1,91 +1,79 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useEffect, useState } from "react";
 
-type Theme = 'light' | 'dark' | 'system';
+// Define the possible theme values
+type Theme = "dark" | "light" | "system";
 
-interface ThemeContextType {
+// Define the shape of the state that our context will provide
+interface ThemeProviderState {
   theme: Theme;
-  resolvedTheme: 'light' | 'dark';
-  toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+// Set the initial state for the context
+const initialState: ThemeProviderState = {
+  theme: "system",
+  setTheme: () => null,
+};
 
-function getSystemTheme(): 'light' | 'dark' {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
+// Create and EXPORT the context so the hook can import it
+export const ThemeProviderContext =
+  createContext<ThemeProviderState>(initialState);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    const stored = localStorage.getItem('docusphere-theme') as Theme;
-    return stored || 'system';
-  });
+// This is the main provider component
+export function ThemeProvider({
+  children,
+  defaultTheme = "system",
+  storageKey = "vite-ui-theme", // This is the key for localStorage
+  ...props
+}: ThemeProviderProps) {
+  // State to hold the current theme
+  const [theme, setTheme] = useState<Theme>(
+    // On initial load, try to get the theme from localStorage, or use the default
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+  );
 
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => {
-    if (theme === 'system') {
-      return getSystemTheme();
-    }
-    return theme as 'light' | 'dark';
-  });
-
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const handleChange = () => {
-      if (theme === 'system') {
-        const newSystemTheme = getSystemTheme();
-        setResolvedTheme(newSystemTheme);
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme]);
-
+  // This effect runs whenever the `theme` state changes
   useEffect(() => {
     const root = window.document.documentElement;
 
-    // Add transition class for smooth theme switching
-    root.style.setProperty('--theme-transition', 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease');
+    // Remove any existing theme classes
+    root.classList.remove("light", "dark");
 
-    root.classList.remove('light', 'dark');
-    root.classList.add(resolvedTheme);
+    // If the theme is 'system', we need to check the user's OS preference
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
 
-    // Store theme preference
-    localStorage.setItem('docusphere-theme', theme);
-
-    // Update meta theme-color for mobile browsers
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#020817' : '#ffffff');
+      root.classList.add(systemTheme);
+      return;
     }
-  }, [theme, resolvedTheme]);
 
-  const setTheme = useCallback((newTheme: Theme) => {
-    setThemeState(newTheme);
-    if (newTheme === 'system') {
-      setResolvedTheme(getSystemTheme());
-    } else {
-      setResolvedTheme(newTheme as 'light' | 'dark');
-    }
-  }, []);
+    // Otherwise, just add the selected theme's class (e.g., 'dark' or 'light')
+    root.classList.add(theme);
+  }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
-  }, [resolvedTheme, setTheme]);
+  // The value that will be provided to all children components
+  const value = {
+    theme,
+    // This function updates both localStorage and the component's state
+    setTheme: (theme: Theme) => {
+      localStorage.setItem(storageKey, theme);
+      setTheme(theme);
+    },
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, toggleTheme, setTheme }}>
+    <ThemeProviderContext.Provider {...props} value={value}>
       {children}
-    </ThemeContext.Provider>
+    </ThemeProviderContext.Provider>
   );
 }
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
+// Define the shape of the props for our ThemeProvider component
+interface ThemeProviderProps {
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
 }

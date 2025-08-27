@@ -1,16 +1,29 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="description" content="DocuSphere - The Modern, Modular GitBook Alternative" />
-    <title>DocuSphere - The Modern GitBook Alternative</title>
-  </head>
 
-  <body>
-    <div id="root"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="DocuSphere - The Modern, Modular GitBook Alternative" />
 
-    <script type="module" src="/client/App.tsx"></script>
-  </body>
+  <!-- SCRIPT TO PREVENT THEME FLICKER -->
+  <script>
+    (function () {
+      const storageKey = 'vite-ui-theme'; // Must match the key in ThemeContext.tsx
+      const theme = localStorage.getItem(storageKey);
+      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <title>DocuSphere - The Modern GitBook Alternative</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/client/App.tsx"></script>
+</body>
+
 </html>
