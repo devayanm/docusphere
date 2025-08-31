@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { Button } from '../components/ui/button';
-import { 
+import {
   BookOpenIcon,
   RocketLaunchIcon,
   UserGroupIcon,
@@ -72,7 +72,7 @@ export default function Index() {
               <BookOpenIcon className="h-8 w-8 text-primary" />
               <span className="text-2xl font-bold text-foreground">DocuSphere</span>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -85,7 +85,7 @@ export default function Index() {
                   <SunIcon className="h-5 w-5" />
                 )}
               </Button>
-              
+
               <Link to="/editor">
                 <Button>
                   Get Started
@@ -106,12 +106,12 @@ export default function Index() {
               <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"> GitBook </span>
               Alternative
             </h1>
-            
+
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              DocuSphere is an open-source, extensible, and developer-friendly documentation platform. 
+              DocuSphere is an open-source, extensible, and developer-friendly documentation platform.
               Self-hostable, customizable, and built for teams that want full control.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link to="/editor">
                 <Button size="lg" className="text-lg px-8 py-3">
@@ -119,11 +119,18 @@ export default function Index() {
                   Try the Editor
                 </Button>
               </Link>
-              
-              <Button variant="outline" size="lg" className="text-lg px-8 py-3">
-                <StarIcon className="mr-2 h-5 w-5" />
-                Star on GitHub
-              </Button>
+
+              <a
+                href="https://github.com/devayanm/docusphere"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="lg" className="text-lg px-8 py-3">
+                  <StarIcon className="mr-2 h-5 w-5" />
+                  Star on GitHub
+                </Button>
+              </a>
+
             </div>
 
             <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
@@ -155,7 +162,7 @@ export default function Index() {
               Everything you need to create, manage, and share beautiful documentation
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="bg-background border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
@@ -181,10 +188,10 @@ export default function Index() {
                 Built for Modern Teams
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                DocuSphere combines the best of GitBook and Notion, giving you complete control 
+                DocuSphere combines the best of GitBook and Notion, giving you complete control
                 over your documentation workflow.
               </p>
-              
+
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -194,7 +201,7 @@ export default function Index() {
                 ))}
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8 border border-primary/20">
               <div className="text-center">
                 <BookOpenIcon className="h-16 w-16 text-primary mx-auto mb-4" />
@@ -224,7 +231,7 @@ export default function Index() {
               <BookOpenIcon className="h-6 w-6 text-primary" />
               <span className="text-lg font-bold text-foreground">DocuSphere</span>
             </div>
-            
+
             <div className="text-sm text-muted-foreground">
               Built with ❤️ for modern documentation workflows
             </div>
