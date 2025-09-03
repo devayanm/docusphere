@@ -2,7 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
 import authRoutes from './routes/authRoutes.js';
 import searchRouter from './routes/search.js';
 import documentRoutes from './routes/documentRoutes.js';
@@ -10,6 +9,7 @@ import documentRoutes from './routes/documentRoutes.js';
 dotenv.config();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -26,7 +26,7 @@ async function start() {
       });
       console.log('✅ Connected to MongoDB');
     } catch (err) {
-      console.log(err)
+      console.log(err);
       console.warn('⚠️ Could not connect to MongoDB. Falling back to in-memory.', err.message);
     }
   } else {
