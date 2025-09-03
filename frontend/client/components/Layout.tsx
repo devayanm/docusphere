@@ -9,7 +9,7 @@ import { useSearch } from "../hooks/useSearch";
 import { Sidebar } from "./Sidebar";
 import { SearchModal } from "./SearchModal";
 import { Button } from "./ui/button";
-import { ThemeToggle } from "./ThemeToggle"; // Import our new component
+import { ThemeToggle } from "./ThemeToggle";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,7 +18,6 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isSearchOpen, openSearch, closeSearch } = useSearch();
-
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
@@ -29,9 +28,7 @@ export function Layout({ children }: LayoutProps) {
         }`}
         onClick={closeSidebar}
       />
-
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-
       <div className="lg:pl-80 transition-all duration-300">
         <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
           <div className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 px-3 sm:px-4 lg:px-8">
@@ -43,14 +40,12 @@ export function Layout({ children }: LayoutProps) {
             >
               <Bars3Icon className="h-5 w-5" />
             </Button>
-
             <Link to="/" className="flex items-center gap-2 lg:hidden">
               <BookOpenIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               <span className="text-lg sm:text-xl font-bold text-foreground hidden xs:block">
                 DocuSphere
               </span>
             </Link>
-
             <div className="flex-1 max-w-xs sm:max-w-md ml-auto lg:ml-0">
               <button
                 onClick={openSearch}
@@ -65,19 +60,15 @@ export function Layout({ children }: LayoutProps) {
                 </kbd>
               </button>
             </div>
-
-            {/* This section now correctly uses the new ThemeToggle component */}
             <div className="ml-2 sm:ml-4">
               <ThemeToggle />
             </div>
           </div>
         </header>
-
         <main className="p-3 sm:p-4 md:p-6 lg:p-8 min-h-[calc(100vh-4rem)]">
           <div className="max-w-full overflow-x-auto">{children}</div>
         </main>
       </div>
-
       <SearchModal isOpen={isSearchOpen} onClose={closeSearch} />
     </div>
   );

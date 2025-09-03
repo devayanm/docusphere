@@ -129,25 +129,38 @@ export function ImportExportModal({
     if (!file) return;
 
     const reader = new FileReader();
+    
     reader.onload = (e) => {
-      const content = e.target?.result as string;
-      
-      if (file.name.endsWith('.json')) {
-        try {
-          const parsed = JSON.parse(content);
-          setImportContent(parsed.content || content);
-          setImportTitle(parsed.title || file.name.replace('.json', ''));
-          setFormat('json');
-        } catch (err) {
-          setImportContent(content);
-          setImportTitle(file.name.replace('.json', ''));
+      try {
+        const content = e.target?.result as string;
+        
+        if (file.name.endsWith('.json')) {
+          try {
+            const parsed = JSON.parse(content);
+            setImportContent(parsed.content || content);
+            setImportTitle(parsed.title || file.name.replace('.json', ''));
+            setFormat('json');
+          } catch (err) {
+            console.error('Failed to parse JSON file:', err);
+            setImportContent(content);
+            setImportTitle(file.name.replace('.json', ''));
+          }
+        } else {
+          setImportContent(markdownToHtml(content));
+          setImportTitle(file.name.replace(/\.(md|txt)$/, ''));
+          setFormat('markdown');
         }
-      } else {
-        setImportContent(markdownToHtml(content));
-        setImportTitle(file.name.replace(/\.(md|txt)$/, ''));
-        setFormat('markdown');
+      } catch (error) {
+        console.error('Failed to read file:', error);
+        // You could add a toast notification here to inform the user
       }
     };
+    
+    reader.onerror = () => {
+      console.error('Failed to read file');
+      // You could add a toast notification here to inform the user
+    };
+    
     reader.readAsText(file);
   };
 
