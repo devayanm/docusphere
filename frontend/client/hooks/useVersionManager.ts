@@ -34,7 +34,7 @@ const useVersionManager = ({
 
       const newVersion: Version = {
         id: Date.now().toString(), // In production, use UUID
-        version: versions.length + 1,
+        version: Date.now(), // Use timestamp to ensure unique version numbers
         content,
         createdBy: currentUser,
         createdAt: new Date().toISOString(),
@@ -49,12 +49,13 @@ const useVersionManager = ({
       console.error('Error creating version:', error);
       throw error;
     }
-  }, [currentUser, versions.length]);
+  }, [currentUser]);
 
   // Auto-save functionality
   useEffect(() => {
     if (!currentContent || !autoSaveInterval) return;
 
+    let timeoutId: NodeJS.Timeout;
     const interval = setInterval(async () => {
       setIsAutoSaving(true);
       try {
@@ -62,22 +63,35 @@ const useVersionManager = ({
       } catch (error) {
         console.error('Auto-save failed:', error);
       } finally {
-        setTimeout(() => setIsAutoSaving(false), 1000);
+        timeoutId = setTimeout(() => setIsAutoSaving(false), 1000);
       }
     }, autoSaveInterval);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [currentContent, autoSaveInterval, createVersion]);
 
   // Manual save
   const saveVersion = useCallback(async (changesSummary?: string) => {
     setIsAutoSaving(true);
+    let timeoutId: NodeJS.Timeout;
     try {
       const version = await createVersion(currentContent, changesSummary);
       return version;
     } finally {
-      setTimeout(() => setIsAutoSaving(false), 500);
+      timeoutId = setTimeout(() => setIsAutoSaving(false), 500);
     }
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [currentContent, createVersion]);
 
   // Restore version
