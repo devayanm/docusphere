@@ -14,7 +14,8 @@ import {
   PhotoIcon,
   TableCellsIcon,
   ArrowUturnLeftIcon,
-  ArrowUturnRightIcon
+  ArrowUturnRightIcon,
+  StrikethroughIcon 
 } from '@heroicons/react/24/outline';
 import { Button } from './ui/button';
 import { MonacoCodeBlock } from './MonacoCodeBlock';
@@ -144,6 +145,14 @@ export function RichTextEditor({
               title="Italic (Ctrl+I)"
             >
               <ItalicIcon className="h-4 w-4" />
+            </MenuButton>
+
+            <MenuButton
+              onClick={() => editor.chain().focus().toggleStrike().run()}
+              isActive={editor.isActive('strike')}
+              title="Strikethrough"
+            >
+              <StrikethroughIcon className="h-4 w-4" />
             </MenuButton>
 
             <MenuButton
